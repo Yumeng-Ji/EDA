@@ -203,6 +203,7 @@ public class Repositorio {
             pub.addAutor(autor);
             autor.addPublicacion(pub);
         }
-        sc.close(); //
+        sc.close();
     }
 }
+
