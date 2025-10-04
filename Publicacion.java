@@ -4,41 +4,44 @@ import java.io.*;
 public class Publicacion {
 
     private String id;
-    private String titulo;
-    private HashSet<Autor> listaAutores;
-    private HashSet<Publicacion> listaCitadas;
-
-    public Publicacion(String pId, String pTitulo) {
-        this.id = pId;
-        this.titulo = pTitulo;
-        this.listaAutores = new HashSet<Autor>();
-        this.listaCitadas = new HashSet<Publicacion>();
-
-
-    }
-
+	private String titulo;
+	private HashSet<String> listaIdAutores;
+	private HashSet<String> listaIdCitadas;
+	
+	public Publicacion(String pId,String pTitulo) {
+		this.id=pId;
+		this.titulo=pTitulo;
+		this.listaIdAutores= new HashSet<String>();
+		this.listaIdCitadas=new HashSet<String>();
+		
+     
+	}
     public String getId() {
-        return id;
+        return this.id;
     }
-
     public String getTitulo() {
-        return titulo;
+        return this.titulo;
+    }
+    public HashSet<String> getIdAutores() {return this.listaIdAutores;}
+    public HashSet<String> getIdCitas() {
+        return this.listaIdCitadas;
     }
 
-    public HashSet<Autor> getListaAutores() {
-        return listaAutores;
+    public void añadirAutor(String pAutorId) {
+        listaIdAutores.add(pAutorId);
     }
 
-    public HashSet<Publicacion> getListaCitadas() {
-        return listaCitadas;
+    public void añadirCita(String pCitaId) {
+        listaIdCitadas.add(pCitaId);
     }
 
-    public void addAutor(Autor autor) {
-        listaAutores.add(autor);
+    public void eliminarAutor(String pAutorId) {
+        listaIdAutores.remove(pAutorId);
     }
 
-    public void addCitada(Publicacion publicacion) {
-        listaCitadas.add(publicacion);
+    public void eliminarCita(String pCitaId) {
+        listaIdCitadas.remove(pCitaId);
     }
 }
+
 
