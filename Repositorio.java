@@ -176,56 +176,46 @@ public class Repositorio {
         autor.addPublicacion(pub);
     }
 
+     
     public void cargarCitas(String pFichero) throws IOException, FileNotFoundException {
         Scanner sc = new Scanner(new FileReader(pFichero));
         String line;
         while (sc.hasNextLine()) {
             line = sc.nextLine();
             String[] lineSplited = line.split("\\s+#\\s+");
-            String idPub = lineSplited[0];
-            String idCitada = lineSplited[1];
-
-            Publicacion pub = buscarPublicacionPorId(idPub);
-            if (pub == null) {
-                pub = new Publicacion(idPub, "");
-                listaPublicaciones.put(idPub, pub);
-            }
-
-            Publicacion citada = buscarPublicacionPorId(idCitada);
-            if(citada == null){
-                citada = new Publicacion(idCitada, "");
-                listaPublicaciones.put(idCitada, citada);
-            }
-            pub.addCitada(citada);
+            String pIdPub = lineSplited[0];
+            String pIdCitada = lineSplited[1];
+            añadirCitaAPublicacion(pIdPub,pIdCitada);
+            System.out.println(lineSplited[0] + " " + lineSplited[1]);
         }
         sc.close();
     }
 
     //Dada una publicación (identificador), devolver una lista con las publicaciones que cita
-    public HashSet<Publicacion> getCitasDePublicacion(String idPublicacion){
+    public HashSet<String> getCitasDePublicacion(String idPublicacion){
         Publicacion pub = buscarPublicacionPorId(idPublicacion);
         if(pub == null){
             return new HashSet<>();
         }
-        return pub.getListaCitadas();
+        return pub.getIdCitas();
     }
 
-    //Dada una publicación, devolver una lista con sus autores
-    public HashSet<Autor> getAutoresDePublicacion(String idPublicacion){
+    //Dada una publicación, devolver una lista con sus id de autores
+    public HashSet<String> getAutoresDePublicacion(String idPublicacion){
         Publicacion pub = buscarPublicacionPorId(idPublicacion);
         if(pub == null){  //si no existe la publicación, devolvemos la lista vacía
             return new HashSet<>();
         }
-        return pub.getListaAutores();
+        return pub.getIdAutores();
     }
 
-    //Dado un autor, devolver una lista con sus publicaciones
-    public HashSet<Publicacion> getPublicacionesDeAutor(String idAutor){
+    //Dado un autor, devolver una lista con sus id de publicaciones
+    public HashSet<String> getPublicacionesDeAutor(String idAutor){
         Autor autor = listaAutores.get(idAutor);
         if(autor == null){
             return new HashSet<>();
         }
-        return autor.getListaPublicaciones();
+        return autor.getListaIdPublicaciones();
     }
 
     public void borrarPublicacion(Publicacion pub){
@@ -233,15 +223,18 @@ public class Repositorio {
             return;
         }
         //Borrarla de los autores que la referencian
-        for(Autor autor: pub.getListaAutores()){
-            autor.getListaPublicaciones().remove(pub);
+        for(String pIdAutor: pub.getIdAutores()) {
+            Autor autor = listaAutores.get(pIdAutor);
+            if (autor != null) {
+                autor.eliminarPublicacion(pub.getId());
+            }
         }
-        //Borrarla de las citas de otras publicaciones
-        for(Publicacion cita: listaPublicaciones.values()) {
-            cita.getListaCitadas().remove(pub);
-        }
-        //Borrarla del repositorio
-        listaPublicaciones.remove(pub.getId());
+            //Borrarla de las citas de otras publicaciones
+            for (Publicacion cita : listaPublicaciones.values()) {
+                cita.eliminarCita(pub.getId());
+            }
+            //Borrarla del repositorio
+            listaPublicaciones.remove(pub.getId());
     }
 
     public void borrarAutor(Autor autor){
@@ -249,43 +242,26 @@ public class Repositorio {
             return;
         }
         //Borrarlo de las publicaciones en las que aparezca
-        for(Publicacion pub: autor.getListaPublicaciones()){
-            pub.getListaAutores().remove(autor);
-        }
+        for(String pIdPub: autor.getListaIdPublicaciones()){
+        Publicacion pub = listaPublicaciones.get(pIdPub);
+        if(pub != null){
+            pub.eliminarAutor(autor.getId());
+         }
+        } 
         //Borrarlo del repositorio
         listaAutores.remove(autor.getId());
     }
-
-    public void readFile(String nom) {
-        try {
-            Scanner entrada = new Scanner(new FileReader(nom));
-
-            String linea;
-            int cont = 0;
-            while (entrada.hasNext()) {
-                linea = entrada.nextLine();
-                cont++;
-                if ((cont % 10000) == 0) System.out.println("Lineas: " + cont + "\t" + linea);
-            }
-
-            entrada.close();
-        } // try
-        catch (IOException e) {
-            e.printStackTrace();
+    public void añadirCitaAPublicacion(String idPubOrigen, String idPubCitada) {
+        // Asegurar que existen ambas publicaciones
+        if (!listaPublicaciones.containsKey(idPubOrigen)) {
+            listaPublicaciones.put(idPubOrigen, new Publicacion(idPubOrigen, ""));
         }
-    }
-
-    public void crearFichero(String nomF, String[] lineas) {
-        // output: se han escrito las líneas en el fichero de nombre nomF
-        try {
-            PrintWriter writer = new PrintWriter(nomF, "UTF-8");
-            for (String s : lineas) {
-                writer.println(s);
-            }
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!listaPublicaciones.containsKey(idPubCitada)) {
+            listaPublicaciones.put(idPubCitada, new Publicacion(idPubCitada, ""));
         }
+
+        // Establecer cita
+        listaPublicaciones.get(idPubOrigen).añadirCita(idPubCitada);
     }
 
     public void guardarPublicaciones(String path) throws IOException{
@@ -303,4 +279,5 @@ public class Repositorio {
         }
         fw.close();
     }
+
 }
