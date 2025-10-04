@@ -229,12 +229,12 @@ public class Repositorio {
                 autor.eliminarPublicacion(pub.getId());
             }
         }
-            //Borrarla de las citas de otras publicaciones
-            for (Publicacion cita : listaPublicaciones.values()) {
-                cita.eliminarCita(pub.getId());
-            }
-            //Borrarla del repositorio
-            listaPublicaciones.remove(pub.getId());
+        //Borrarla de las citas de otras publicaciones
+        for (Publicacion cita : listaPublicaciones.values()) {
+            cita.eliminarCita(pub.getId());
+        }
+        //Borrarla del repositorio
+        listaPublicaciones.remove(pub.getId());
     }
 
     public void borrarAutor(Autor autor){
@@ -281,3 +281,4 @@ public class Repositorio {
     }
 
 }
+
