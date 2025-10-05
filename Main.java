@@ -4,41 +4,136 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Main {
     public static void main(String[] args) throws IOException, FileNotFoundException {
-       /* Repositorio.getRepositorio().cargarAutor("C:\\Users\\Yu Meng Ji\\IdeaProjects\\EDA\\src\\Datuak\\authors-name-all.txt");
-       ArrayList<String> titulos = new ArrayList<>();
-            titulos.add("Ade");
-            titulos.add("Acbd");
-            titulos.add("Bbcd");
-            titulos.add("Cbcd");
-            titulos.add("Dcd");
-            System.out.println("Original titles:");
-            for (int i = 0; i < titulos.size(); i++) {
-                System.out.println((i+1) + ". " + titulos.get(i));
-            }
-            String[] ordenas = miRep.publicacionesOrdenadas(titulos);
-            System.out.println("\nSorted titles:");
-            for (int i = 0; i < ordenas.length; i++) {
-                System.out.println((i+1) + ". " + ordenas[i]);
-            }
-        int tamanio =Repositorio.getRepositorio().tamañoHash();
-        System.out.println(tamanio); */
+        long inicio = System.currentTimeMillis();
 
-        ArrayList<String> listaTitulos = Repositorio.getRepositorio().cargarPublicacion("C:\\Users\\Yu Meng Ji\\IdeaProjects\\EDA\\src\\Datuak\\publications-titles-all.txt");
-        int tamanio1 = Repositorio.getRepositorio().tamañoHashPublicacion();
-        System.out.println(tamanio1);
-        //Repositorio.getRepositorio().imprimirListaOrdenada();
+        //Cargar datos
+        Repositorio.getRepositorio().cargarAutor("C:\\Users\\Yu Meng Ji\\IdeaProjects\\EDA\\src\\Datuak\\authors-name-all.txt");
+        System.out.println("Los datos se han cargado. Se han cargado " + Repositorio.getRepositorio().tamañoHashAutor() + " autores desde el archivo.");
+        System.out.println("");
 
-        String[] ordenadas = Repositorio.getRepositorio().publicacionesOrdenadas(listaTitulos);
-        for (String titulo : ordenadas) {
-            System.out.println(titulo);
+        Repositorio.getRepositorio().cargarPublicacion("C:\\Users\\Yu Meng Ji\\IdeaProjects\\EDA\\src\\Datuak\\publications-titles-all.txt");
+        System.out.println("Los datos se han cargado. Se han cargado " + Repositorio.getRepositorio().tamañoHashPublicacion() + " publicaciones desde el archivo.");
+        System.out.println("");
+
+        Repositorio.getRepositorio().cargarPublicacionesAutores("C:\\Users\\Yu Meng Ji\\IdeaProjects\\EDA\\src\\Datuak\\publications-authors-all-final.txt");
+        Repositorio.getRepositorio().cargarCitas("C:\\Users\\Yu Meng Ji\\IdeaProjects\\EDA\\src\\Datuak\\publications-citedPubs-all.txt");
+        System.out.println("Se han cargado las relaciones de autores y citas.");
+
+        //Buscar una publicación dado su id
+        String pubBuscar = "Q34484783";
+        System.out.println("Se buscará la publicación: " + pubBuscar);
+        Publicacion pub = Repositorio.getRepositorio().buscarPublicacionPorId(pubBuscar);
+        if (pub != null) {
+            System.out.println("Publicación encontrada: " + pub.getTitulo());
+        } else {
+            System.out.println("No se encontró la publicación con id " + pubBuscar);
+        }
+        System.out.println();
+
+        //Insertar una nueva publicacion
+        Repositorio.getRepositorio().añadirPublicacion("Q12345678","Vlog de Viaje: Explorando la Costa Vasca");
+        System.out.println("La publicación ha sido añadida. Nuevo número de publicaciones: " + Repositorio.getRepositorio().tamañoHashPublicacion());
+        System.out.println("");
+
+        //Añadir una cita a una publicacion
+        String pubOrigen = "Q12345678";
+        Repositorio.getRepositorio().añadirPublicacion("Q87654321","La Costa Vasca");
+        Publicacion origen = Repositorio.getRepositorio().buscarPublicacionPorId(pubOrigen);
+        Publicacion citada = Repositorio.getRepositorio().buscarPublicacionPorId("Q87654321");
+        if (origen != null && citada != null) {
+            origen.addCitada(citada);
+            System.out.println("La publicación " + pubOrigen + " ahora cita a " + citada.getId() + ".\n");
+        } else {
+            System.out.println("No se pudo añadir la cita porque alguna publicación no existe.\n");
         }
 
-        System.out.println("Fin");
+        //Añadir un nuevo autor
+        Repositorio.getRepositorio().añadirAutor("Q13579246", "Ana");
+        System.out.println("Autor nuevo añadido: Q13579246 - Ana");
+        System.out.println("Número total de autores: " + Repositorio.getRepositorio().tamañoHashAutor() + "\n");
 
+        //Añadir un autor a una publicacion
+        Repositorio.getRepositorio().añadirAutorAPublicacion("Q13579246", "Q12345678");
+        System.out.println("El autor Q13579246 se ha asociado a la publicación Q12345678.");
+
+        //Dada una publicacion, devolver una lista con las publicaciones que cita
+        System.out.println("Publicaciones citadas por Q12345678:");
+        HashSet<Publicacion> citas = Repositorio.getRepositorio().getCitasDePublicacion("Q12345678");
+        if (citas.isEmpty()) {
+            System.out.println(" (No cita a ninguna publicación)");
+        } else {
+            for (Publicacion p : citas) {
+                System.out.println(" - " + p.getId() + " # " + p.getTitulo());
+            }
+        }
+        System.out.println();
+
+        //Dada una publicacion, devolver una lista con sus autores
+        System.out.println("Autores de la publicación Q12345678:");
+        HashSet<Autor> autoresPub = Repositorio.getRepositorio().getAutoresDePublicacion("Q12345678");
+        if (autoresPub.isEmpty()) {
+            System.out.println(" (No tiene autores asociados)");
+        } else {
+            for (Autor a : autoresPub) {
+                System.out.println(" - " + a.getId() + " # " + a.getNombre());
+            }
+        }
+        System.out.println();
+
+        //Dado un autor, devolver una lista con sus publicaciones
+        System.out.println("Publicaciones del autor Q13579246:");
+        HashSet<Publicacion> pubsAutor = Repositorio.getRepositorio().getPublicacionesDeAutor("Q13579246");
+        if (pubsAutor.isEmpty()) {
+            System.out.println(" (El autor no tiene publicaciones)");
+        } else {
+            for (Publicacion p : pubsAutor) {
+                System.out.println(" - " + p.getId() + " # " + p.getTitulo());
+            }
+        }
+        System.out.println();
+
+        //Borrar un autor
+        System.out.println("Borrando autor Q13579246...");
+        Autor autorABorrar = Repositorio.getRepositorio().getListaAutores().get("Q13579246");
+        if (autorABorrar != null) {
+            Repositorio.getRepositorio().borrarAutor(autorABorrar);
+            System.out.println("Autor Q13579246 eliminado. Total de autores: " + Repositorio.getRepositorio().tamañoHashAutor());
+        } else {
+            System.out.println("El autor Q13579246 no existe.");
+        }
+        System.out.println();
+
+        //Borrar una publicacion
+        System.out.println("Borrando publicación Q12345678...");
+        Publicacion pubABorrar = Repositorio.getRepositorio().getListaPublicaciones().get("Q12345678");
+        if (pubABorrar != null) {
+            Repositorio.getRepositorio().borrarPublicacion(pubABorrar);
+            System.out.println("Publicación Q12345678 eliminada. Total publicaciones: " + Repositorio.getRepositorio().tamañoHashPublicacion());
+        } else {
+            System.out.println("La publicación Q12345678 no existe.");
+        }
+        System.out.println();
+
+        //Ordenar la lista de publicaciones
+        ArrayList<String> listaTitulos = new ArrayList<>();
+        for (Publicacion p : Repositorio.getRepositorio().getListaPublicaciones().values()) {
+            listaTitulos.add(p.getTitulo());
+        }
+        Repositorio.getRepositorio().publicacionesOrdenadas(listaTitulos);
+
+        //Escribir los datos en archivos
+        System.out.println("Finalmente, escribiremos todos los datos en nuevos archivos.");
+        Repositorio.getRepositorio().guardarAutores("C:\\Users\\Yu Meng Ji\\IdeaProjects\\EDA\\src\\Datuak\\salida-autores-all.txt");
+        Repositorio.getRepositorio().guardarPublicaciones("C:\\Users\\Yu Meng Ji\\IdeaProjects\\EDA\\src\\Datuak\\salida-publicaciones-all.txt");
+        System.out.println("Archivos de salida generados correctamente.");
+
+        //Calcular tiempo
+        long fin = System.currentTimeMillis();
+        double tiempo = (double) ((fin - inicio) / 1000);
+        System.out.println("Tiempo total de ejecución: " + tiempo + " segundos");
     }
 }
-
-
