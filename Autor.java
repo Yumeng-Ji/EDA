@@ -13,15 +13,15 @@ public class Autor {
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public String getNombre() {
-        return nombre;
+        return this.nombre;
     }
 
     public HashSet<Publicacion> getListaPublicaciones() {
-        return listaPublicaciones;
+        return this.listaPublicaciones;
     }
 
     public void addPublicacion(Publicacion publicacion) {

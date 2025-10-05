@@ -18,19 +18,19 @@ public class Publicacion {
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public String getTitulo() {
-        return titulo;
+        return this.titulo;
     }
 
     public HashSet<Autor> getListaAutores() {
-        return listaAutores;
+        return this.listaAutores;
     }
 
     public HashSet<Publicacion> getListaCitadas() {
-        return listaCitadas;
+        return this.listaCitadas;
     }
 
     public void addAutor(Autor autor) {
