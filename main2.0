@@ -52,7 +52,6 @@ public class Main {
         //Dada una publicacion, devolver una lista con las publicaciones que cita
         System.out.println(Repositorio.getRepositorio().ImprimirCitasDePublicacion("Q12345678"));
 
-
         //Dada una publicacion, devolver una lista con sus autores
         System.out.println(Repositorio.getRepositorio().ImprimirAutoresDePublicacion("Q12345678"));
 
@@ -64,6 +63,7 @@ public class Main {
 
         //Borrar una publicacion
         System.out.println(Repositorio.getRepositorio().borrarPublicacionPorId("Q12345678"));
+        System.out.println(Repositorio.getRepositorio().borrarPublicacionPorId("Q87654321"));
 
         //Ordenar la lista de publicaciones, sacando los 10 primeros elementos de la lista.
         System.out.println(Repositorio.getRepositorio().imprimirPublicacionesOrdenadas(10));
