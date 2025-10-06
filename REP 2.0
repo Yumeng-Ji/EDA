@@ -302,6 +302,7 @@ public class Repositorio {
         ArrayList<String> listaTitulos = new ArrayList<>();
         System.out.println(this.tamañoHashPublicacion());
         for (Publicacion p : this.listaPublicaciones.values()) {
+         if (p.getTitulo() != null && !p.getTitulo().isEmpty()) 
             //System.out.println("ID: " + p.getId()  + "  Título: [" + p.getTitulo() + "]");
             listaTitulos.add(p.getTitulo());
         }
