@@ -30,49 +30,44 @@ public class Repositorio {
     }
 
     public void cargarAutor(String pFichero) throws IOException, FileNotFoundException {
-        Scanner sc = new Scanner(new FileReader(pFichero));
+        BufferedReader br = new BufferedReader(new FileReader(pFichero));
         String line;
-        while (sc.hasNextLine()) {
-            line = sc.nextLine();
+        while ((line = br.readLine()) != null) {
             String[] lineSplited = line.split("\\s+#\\s+");
             añadirAutor(lineSplited[0], lineSplited[1]);
         }
-        sc.close();
+        br.close();
     }
 
     public ArrayList<String> cargarPublicacion(String pFichero) throws IOException, FileNotFoundException {
         ArrayList<String> titulos = new ArrayList<>();
-        Scanner sc = new Scanner(new FileReader(pFichero));
+        BufferedReader br = new BufferedReader(new FileReader(pFichero));
         String line;
-        while (sc.hasNextLine()) {
-            line = sc.nextLine();
+        while ((line = br.readLine()) != null) {
             String[] lineSplited = line.split("\\s+#\\s+");
             añadirPublicacion(lineSplited[0], lineSplited[1]);
             titulos.add(lineSplited[1]);
         }
-        sc.close();
+        br.close();
         return titulos;
     }
 
     public void cargarPublicacionesAutores(String pFichero) throws IOException, FileNotFoundException {
-        Scanner sc = new Scanner(new FileReader(pFichero));
+        BufferedReader br = new BufferedReader(new FileReader(pFichero));
         String line;
-        while (sc.hasNextLine()) {
-            line = sc.nextLine();
+        while ((line = br.readLine()) != null) {
             String[] lineSplited = line.split("\\s+#\\s+");
             String idPub = lineSplited[0];
             String idAutor = lineSplited[1];
-
             añadirAutorAPublicacion(idAutor, idPub);
         }
-        sc.close();
+        br.close();
     }
 
     public void cargarCitas(String pFichero) throws IOException, FileNotFoundException {
-        Scanner sc = new Scanner(new FileReader(pFichero));
+        BufferedReader br = new BufferedReader(new FileReader(pFichero));
         String line;
-        while (sc.hasNextLine()) {
-            line = sc.nextLine();
+        while ((line=br.readLine())!=null) {
             String[] lineSplited = line.split("\\s+#\\s+");
             String idPub = lineSplited[0];
             String idCitada = lineSplited[1];
@@ -95,9 +90,8 @@ public class Repositorio {
             }*/
             //pub.addCitada(citada);
         }
-        sc.close();
+        br.close();
     }
-
 
     public int tamañoHashAutor() {
         return this.listaAutores.size();
@@ -240,7 +234,7 @@ public class Repositorio {
         return sb.toString();
     }
 
-    public void borrarPublicacion(Publicacion pub){
+    private void borrarPublicacion(Publicacion pub){
         if(pub == null){
             return;
         }
@@ -258,13 +252,12 @@ public class Repositorio {
 
     public String borrarPublicacionPorId(String idPub) {
         Publicacion pub = listaPublicaciones.get(idPub);
-
         if (pub == null) {
             return "La publicación " + idPub + " no existe.";
+        }else {
+            borrarPublicacion(pub);
+            return "Publicación " + idPub + " eliminada. Total publicaciones: " + tamañoHashPublicacion();
         }
-
-        borrarPublicacion(pub);
-        return "Publicación " + idPub + " eliminada. Total publicaciones: " + tamañoHashPublicacion();
     }
 
     public void borrarAutor(Autor autor){
@@ -285,7 +278,7 @@ public class Repositorio {
             return "El autor " + idAutor + " no existe.";
         }
         borrarAutor(autor);
-        return " Autor " + idAutor + " eliminado. Total de autores: " + tamañoHashAutor();
+        return "Autor " + idAutor + " eliminado. Total de autores: " + tamañoHashAutor();
     }
 
     public void guardarPublicaciones(String path) throws IOException{
@@ -367,3 +360,4 @@ public class Repositorio {
         lista[der] = temp;
     }
 }
+
